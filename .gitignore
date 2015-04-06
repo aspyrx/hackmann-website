@@ -3,3 +3,4 @@ node_modules/
 style/style.css
 hackmann-website
 !hackmann-website.go
+registrations.csv
