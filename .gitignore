@@ -1,6 +1,5 @@
 .DS_STORE
 node_modules/
-style/style.css
-hackmann-website
-!hackmann-website.go
-registrations.csv
+src/style/style.css
+bin/
+dist/
