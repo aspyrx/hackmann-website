@@ -25,7 +25,7 @@ body {
 
 .animated {
     animation-fill-mode: both;
-    animation-duration: 1500ms;
+    animation-duration: 1000ms;
 }
 
 @keyframes fadeInDown {
@@ -94,9 +94,15 @@ body {
 #header-logo {
     margin-top: 0;
     margin-bottom: 0;
+}
+
+#header-logo-text {
+    position: relative;
+    overflow: hidden;
     font-size: 25px;
     @media (min-width: @screen-sm-min) {
         font-size: 50px;
+        white-space: nowrap;
     }
     @media (min-width: @screen-md-min) {
         font-size: 75px;
@@ -106,10 +112,31 @@ body {
     }
 }
 
+@keyframes headerTextAppear {
+    0% {
+        width: 0;
+        left: 50%;
+        right: 50%;
+    }
+
+    100% {
+        width: 100%;
+        left: 0;
+        right: 0;
+    }
+}
+
+.headerTextAppear {
+    animation-name: headerTextAppear;
+    animation-duration: 450ms;
+    animation-delay: 550ms;
+}
+
 .chevron {
     position: absolute;
     top: 0;
     bottom: 0;
+    width: 100%;
 }
 
 .chevron img {
@@ -124,15 +151,39 @@ body {
 
 .chevron-right {
     right: 0;
-    transform: rotate(180deg);
 }
 
-@keyframes chevronMoveLeft {
+@keyframes chevronLeftSlide {
     0% {
         transform: translateX(50%);
     }
 
     100% {
-
+        transform: translateX(0);
     }
+}
+
+@keyframes chevronRightSlide {
+    0% {
+        transform: translateX(-50%) scaleX(-1);
+    }
+
+    100% {
+        transform: translateX(0) scaleX(-1);
+    }
+}
+
+.chevronSlide() {
+    animation-delay: 500ms;
+    animation-duration: 500ms;
+}
+
+.chevronLeftSlide {
+    .chevronSlide();
+    animation-name: chevronLeftSlide;
+}
+
+.chevronRightSlide {
+    .chevronSlide();
+    animation-name: chevronRightSlide;
 }
