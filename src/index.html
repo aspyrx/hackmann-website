@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <title>HackMann 2015</title>
     <meta charset="utf-8">
@@ -37,11 +37,21 @@
             <div class="container-fluid animated fadeInDown">
                 <h1 id="header-logo" class="text-center">
                     <div class="chevron chevron-left animated chevronLeftSlide">
-                        <img src="img/chevron.svg">
+                        <svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 500 1000" height="1e3" width="500">
+                            <g fill-rule="evenodd" transform="matrix(10,0,0,10,0,-9523.6)">
+                                <path fill="#5f0013" d="m49.5 952.36-20 50 20 50h-20l-20-50 20-50h20"/>
+                                <path d="m30.5 952.36h-10l-20 50 20 50h10l-20-50z"/>
+                            </g>
+                        </svg>
                     </div>
                     <div id="header-logo-text" class="animated headerTextAppear"><span class="hack">Hack</span><span class="mann">MANN</span> <b>2015</b></div>
                     <div class="chevron chevron-right animated chevronRightSlide">
-                        <img src="img/chevron.svg">
+                        <svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 500 1000" height="1e3" width="500">
+                            <g fill-rule="evenodd" transform="matrix(10,0,0,10,0,-9523.6)">
+                                <path fill="#5f0013" d="m49.5 952.36-20 50 20 50h-20l-20-50 20-50h20"/>
+                                <path d="m30.5 952.36h-10l-20 50 20 50h10l-20-50z"/>
+                            </g>
+                        </svg>
                     </div>
                 </h1>
             </div>
@@ -81,31 +91,31 @@
     <div id="register" class="row">
         <a name="scroll-register" class="scroll-anchor"></a>
         <div class="col-xs-12">
-            <form class="container-fluid">
+            <form class="container-fluid" id="registerForm" action="./register" onsubmit="submitRegisterForm(this); return false;">
                 <div class="row">
                     <h2 class="text-center">Register for <span class="brand"><span class="hack">Hack</span><span class="mann">MANN</span></span> <b>2015</b></h2>
                 </div>
                 <div class="row">
                     <div class="form-group col-md-3">
-                        <label for="register-first-name">First Name</label>
-                        <input type="text" id="register-first-name" class="form-control" placeholder="First Name">
+                        <label for="firstName">First Name</label>
+                        <input type="text" name="firstName" class="form-control" placeholder="First Name" required>
                     </div>
                     <div class="form-group col-md-3">
-                        <label for="register-last-name">Last Name</label>
-                        <input type="text" id="register-last-name" class="form-control" placeholder="Last Name">
+                        <label for="lastName">Last Name</label>
+                        <input type="text" name="lastName" class="form-control" placeholder="Last Name" required>
                     </div>
                     <div class="form-group col-md-3">
-                        <label for="register-school">School</label>
-                        <input type="text" id="register-school" class="form-control" placeholder="School">
+                        <label for="school">School</label>
+                        <input type="text" name="school" class="form-control" placeholder="School" required>
                     </div>
                     <div class="form-group col-md-3">
-                        <label for="register-email">Email</label>
-                        <input type="email" id="register-email" class="form-control" placeholder="Email">
+                        <label for="email">Email</label>
+                        <input type="email" name="email" class="form-control" placeholder="Email" required>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-xs-12">
-                        <button type="submit" class="btn btn-primary center-block">Register</button>
+                        <input type="submit" value="Register" class="btn btn-primary center-block">
                     </div>
                 </div>
             </form>

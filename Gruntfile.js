@@ -10,12 +10,12 @@ module.exports = function(grunt) {
                 tasks: ['go:build:hackmann']
             }
         },
-        
+
         copy: {
             dist: {
                 expand: true,
                 cwd: 'src/',
-                src: ['*.html', 'img/*'],
+                src: ['*.html'],
                 dest: 'dist/'
             }
         },
@@ -38,7 +38,7 @@ module.exports = function(grunt) {
                 }
             }
         },
-        
+
         cssmin: {
             dist: {
                 files: [{
@@ -50,7 +50,7 @@ module.exports = function(grunt) {
                 }]
             }
         },
-        
+
         uglify: {
             dist: {
                 files: {
@@ -58,7 +58,7 @@ module.exports = function(grunt) {
                 }
             }
         },
-        
+
         go: {
             hackmann: {
                 output: 'bin/hackmann-website.bin'
@@ -72,6 +72,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-go');
-    grunt.registerTask('build', ['copy:dist', 'less:dist', 'cssmin:dist', 'uglify:dist'])
+    grunt.registerTask('dist', ['copy:dist', 'less:dist', 'cssmin:dist', 'uglify:dist'])
+    grunt.registerTask('build', ['go:build:hackmann', 'dist']);
     grunt.registerTask('default', ['watch']);
 };

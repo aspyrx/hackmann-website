@@ -22,3 +22,20 @@ function animateBits() {
         document.getElementById(BITS_ID).innerHTML = BITS_TEXT;
     }, BITS_ANIMATE_DURATION);
 }
+
+function submitRegisterForm(form) {
+    if (!form.checkValidity()) {
+        return;
+    }
+
+    var req = new XMLHttpRequest();
+    req.onload = function() {
+        if (this.status != 200) {
+            console.log('Error submitting registerForm');
+        } else {
+            console.log('Successfully submitted registerForm');
+        }
+    }
+    req.open('post', form.action, true);
+    req.send(new FormData(form));
+}
