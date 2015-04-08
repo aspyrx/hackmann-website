@@ -1,6 +1,6 @@
 window.onload = function() {
     animateBits();
-}
+};
 
 function animateBits() {
     const BITS_ID = 'bits';

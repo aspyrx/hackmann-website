@@ -14,14 +14,18 @@ b {
     font-weight: 600;
 }
 
+body {
+    padding-top: @navbar-height;
+}
+
 .center-vertical {
-    position: relative;
     top: 50%;
     transform: translateY(-50%);
 }
 
-body {
-    padding-top: @navbar-height;
+.animated {
+    animation-fill-mode: both;
+    animation-duration: 1500ms;
 }
 
 @keyframes fadeInDown {
@@ -58,7 +62,6 @@ body {
 
 .fadeIn {
     animation-name: fadeIn;
-    animation-duration: 1500ms;
 }
 
 .fadeInDown {
@@ -88,25 +91,48 @@ body {
     height: 90vh;
 }
 
-#header h1 {
+#header-logo {
     margin-top: 0;
-    @size: 50px;
-    font-size: @size;
+    margin-bottom: 0;
+    font-size: 25px;
+    @media (min-width: @screen-sm-min) {
+        font-size: 50px;
+    }
     @media (min-width: @screen-md-min) {
-        .text-nowrap();
-        font-size: @size * 1.5;
+        font-size: 75px;
     }
     @media (min-width: @screen-lg-min) {
-        .text-nowrap();
-        font-size: @size * 2;
+        font-size: 100px;
     }
 }
 
 .chevron {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+}
 
+.chevron img {
+    display: block;
+    height: 100%;
+    width: auto;
+}
+
+.chevron-left {
+    left: 0;
 }
 
 .chevron-right {
+    right: 0;
     transform: rotate(180deg);
 }
 
+@keyframes chevronMoveLeft {
+    0% {
+        transform: translateX(50%);
+    }
+
+    100% {
+
+    }
+}
