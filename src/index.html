@@ -26,7 +26,7 @@
                     <li class="visible-xs"><a href="#scroll-register">Register</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right hidden-xs">
-                    <li><button type="button" class="btn btn-primary navbar-btn" onclick="window.location.href = '#scroll-register'">Register</button></li>
+                    <li><button type="button" id="navbar-register-button" class="btn btn-primary navbar-btn">Register</button></li>
                 </ul>
             </div>
         </div>
@@ -37,25 +37,25 @@
             <div class="container-fluid animated fadeInDown">
                 <h1 id="header-logo" class="text-center">
                     <div class="chevron chevron-left animated chevronLeftSlide">
-                        <svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 500 1000" height="1e3" width="500">
+                        <svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 750 1000" height="1e3" width="750">
                             <g fill-rule="evenodd" transform="matrix(10,0,0,10,0,-9523.6)">
-                                <path fill="#5f0013" d="m49.5 952.36-20 50 20 50h-20l-20-50 20-50h20"/>
-                                <path d="m30.5 952.36h-10l-20 50 20 50h10l-20-50z"/>
+                                <path fill="#5f0013" d="m75 952.36-20 50 20 50h-20l-20-50 20-50h20"/>
+                                <path d="m40 952.36-20 50 20 50h-20l-20-50 20-50h20" fill-rule="evenodd"/>
                             </g>
                         </svg>
                     </div>
                     <div id="header-logo-text" class="animated headerTextAppear"><span class="hack">Hack</span><span class="mann">MANN</span> <b>2015</b></div>
                     <div class="chevron chevron-right animated chevronRightSlide">
-                        <svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 500 1000" height="1e3" width="500">
+                        <svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 750 1000" height="1e3" width="750">
                             <g fill-rule="evenodd" transform="matrix(10,0,0,10,0,-9523.6)">
-                                <path fill="#5f0013" d="m49.5 952.36-20 50 20 50h-20l-20-50 20-50h20"/>
-                                <path d="m30.5 952.36h-10l-20 50 20 50h10l-20-50z"/>
+                                <path fill="#5f0013" d="m75 952.36-20 50 20 50h-20l-20-50 20-50h20"/>
+                                <path d="m40 952.36-20 50 20 50h-20l-20-50 20-50h20" fill-rule="evenodd"/>
                             </g>
                         </svg>
                     </div>
                 </h1>
             </div>
-            <h2 class="text-center animated fadeIn" onclick="animateBits()">Hack your code to <code id="bits">0101</code>.</h2>
+            <h2 class="text-center animated fadeIn">Hack your code to <code id="bits">0101</code>.</h2>
             <h3 class="text-center animated fadeInUp"><b><span class="text-primary">Saturday, 2015 May 2</b> from 7 AM to 9 PM</h3>
             <h2 class="text-center animated fadeInUp">
                 <a href="#scroll-register" class="btn btn-primary btn-lg" role="button">Register</a>
@@ -91,18 +91,18 @@
     <div id="register" class="row">
         <a name="scroll-register" class="scroll-anchor"></a>
         <div class="col-xs-12">
-            <form class="container-fluid" id="registerForm" action="./register" onsubmit="submitRegisterForm(this); return false;">
+            <form class="container-fluid" id="registerForm" method="post" action="./register">
                 <div class="row">
                     <h2 class="text-center">Register for <span class="brand"><span class="hack">Hack</span><span class="mann">MANN</span></span> <b>2015</b></h2>
                 </div>
                 <div class="row">
                     <div class="form-group col-md-3">
-                        <label for="firstName">First Name</label>
-                        <input type="text" name="firstName" class="form-control" placeholder="First Name" required>
+                        <label for="firstname">First Name</label>
+                        <input type="text" name="firstname" class="form-control" placeholder="First Name" required>
                     </div>
                     <div class="form-group col-md-3">
-                        <label for="lastName">Last Name</label>
-                        <input type="text" name="lastName" class="form-control" placeholder="Last Name" required>
+                        <label for="lastname">Last Name</label>
+                        <input type="text" name="lastname" class="form-control" placeholder="Last Name" required>
                     </div>
                     <div class="form-group col-md-3">
                         <label for="school">School</label>
@@ -133,3 +133,4 @@
 <script src="script/script.js"></script>
 </body>
 </html>
+

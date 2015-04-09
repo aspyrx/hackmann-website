@@ -2,6 +2,41 @@ window.onload = function() {
     animateBits();
 };
 
+document.getElementById('navbar-register-button').onload = function(e) {
+    window.location.href = '#scroll-register';
+}
+
+document.getElementById('registerForm').onsubmit = function(e) {
+    e.preventDefault();
+
+    var form = e.target;
+    if (!form.checkValidity()) {
+        console.log('Form is invalid');
+        return;
+    }
+
+    var formData = {}
+    for (var id in form.elements) {
+        var input = form.elements[id];
+        if (input instanceof HTMLElement && input.name.length > 0) {
+            formData[input.name] = input.value;
+        }
+    }
+    console.log(formData);
+
+    jQuery.ajax(form.action, {
+        method: 'POST',
+        data: formData,
+        success: function(data, textStatus, jqXHR) {
+            console.log("Successfully submitted");
+            console.log(data);
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            console.log(jqXHR, textStatus, errorThrown);
+        }
+    });
+}
+
 function animateBits() {
     const BITS_ID = 'bits';
     const BITS_TEXT = 'bits';
@@ -23,19 +58,3 @@ function animateBits() {
     }, BITS_ANIMATE_DURATION);
 }
 
-function submitRegisterForm(form) {
-    if (!form.checkValidity()) {
-        return;
-    }
-
-    var req = new XMLHttpRequest();
-    req.onload = function() {
-        if (this.status != 200) {
-            console.log('Error submitting registerForm');
-        } else {
-            console.log('Successfully submitted registerForm');
-        }
-    }
-    req.open('post', form.action, true);
-    req.send(new FormData(form));
-}
