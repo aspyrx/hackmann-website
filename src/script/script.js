@@ -28,10 +28,17 @@ document.getElementById('registerForm').onsubmit = function(e) {
         method: 'POST',
         data: formData,
         success: function(data, textStatus, jqXHR) {
-            console.log("Successfully submitted");
+            document.getElementById('register-form-status').classList.remove('hidden');
+            document.getElementById('register-form-status').classList.add("alert-success");
+            document.getElementById('register-form-status-title').innerHTML = 'Success!';
+            document.getElementById('register-form-status-message').innerHTML = 'Thanks for signing up for HackMANN 2015!';
             console.log(data);
         },
         error: function(jqXHR, textStatus, errorThrown) {
+            document.getElementById('register-form-status').classList.remove('hidden');
+            document.getElementById('register-form-status').classList.add('alert-danger');
+            document.getElementById('register-form-status-title').innerHTML = 'Uh oh...';
+            document.getElementById('register-form-status-message').innerHTML = 'Something went wrong! Please try again or contact us via email.';
             console.log(jqXHR, textStatus, errorThrown);
         }
     });
