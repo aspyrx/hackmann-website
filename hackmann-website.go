@@ -18,11 +18,22 @@ func main() {
 		log.Fatal(err)
 	}
 
-	http.Handle("/", http.FileServer(http.Dir("./dist")))
+	http.HandleFunc("/", rootHandler)
 	http.HandleFunc("/register", registerHandler)
 	if err := http.ListenAndServe("0.0.0.0:80", nil); err != nil {
 		log.Fatal(err)
 	}
+}
+
+func rootHandler(w http.ResponseWriter, r *http.Request) {
+    const rootDirectory = "./dist"
+    switch (r.URL.Path) {
+        case "/":
+            w.Header().Set("Content-Type", "application/xhtml+xml")
+            http.ServeFile(w, r, rootDirectory + "/index.xhtml")
+        default:
+            http.ServeFile(w, r, rootDirectory + r.URL.Path)
+    }
 }
 
 func registerHandler(w http.ResponseWriter, r *http.Request) {
