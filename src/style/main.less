@@ -14,9 +14,17 @@ b {
     font-weight: 600;
 }
 
+html, body {
+    height: 100%;
+}
+
 body {
     padding-top: @navbar-height;
     overflow-x: hidden;
+}
+
+.full-height {
+    height: 100%;
 }
 
 .center-vertical {
@@ -89,7 +97,25 @@ body {
 }
 
 #header {
-    height: 90vh;
+    height: 100%;
+}
+
+#c2a {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 7.5%;
+}
+
+#c2a a {
+    display: block;
+    height: 100%;
+}
+
+#c2a svg {
+    height: 100%;
+    width: auto;
 }
 
 #header-logo {
