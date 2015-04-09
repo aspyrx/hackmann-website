@@ -57,13 +57,7 @@ module.exports = function(grunt) {
                     'dist/script/script.js': ['src/script/script.js']
                 }
             }
-        },
-
-        go: {
-            hackmann: {
-                output: 'bin/hackmann-website.bin'
-            }
-        },
+        }
     });
 
     grunt.loadNpmTasks('grunt-contrib-watch');
@@ -71,8 +65,6 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-less');
     grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-contrib-uglify');
-    grunt.loadNpmTasks('grunt-go');
     grunt.registerTask('dist', ['copy:dist', 'less:dist', 'cssmin:dist', 'uglify:dist'])
-    grunt.registerTask('build', ['go:build:hackmann', 'dist']);
     grunt.registerTask('default', ['watch']);
 };
