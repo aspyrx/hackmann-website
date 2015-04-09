@@ -2,7 +2,7 @@ window.onload = function() {
     animateBits();
 };
 
-document.getElementById('navbar-register-button').onload = function(e) {
+document.getElementById('navbar-register-button').onclick = function() {
     window.location.href = '#scroll-register';
 }
 
