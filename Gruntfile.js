@@ -4,10 +4,6 @@ module.exports = function(grunt) {
             less: {
                 files: ['src/style/*.less'],
                 tasks: ['less:src']
-            },
-            go: {
-                files: ['*.go'],
-                tasks: ['go:build:hackmann']
             }
         },
 
@@ -15,7 +11,7 @@ module.exports = function(grunt) {
             dist: {
                 expand: true,
                 cwd: 'src/',
-                src: ['*.xhtml'],
+                src: ['*.xhtml', 'img/*'],
                 dest: 'dist/'
             }
         },

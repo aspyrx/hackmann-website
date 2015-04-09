@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"regexp"
+    "strings"
 )
 
 var Db *sql.DB
@@ -32,6 +33,9 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
             w.Header().Set("Content-Type", "application/xhtml+xml")
             http.ServeFile(w, r, rootDirectory + "/index.xhtml")
         default:
+            if strings.HasSuffix(r.URL.Path, ".svg") {
+                w.Header().Set("Content-Type", "image/svg+xml")
+            }
             http.ServeFile(w, r, rootDirectory + r.URL.Path)
     }
 }
