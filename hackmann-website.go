@@ -20,7 +20,7 @@ func main() {
 
 	http.Handle("/", http.FileServer(http.Dir("./dist")))
 	http.HandleFunc("/register", registerHandler)
-	if err := http.ListenAndServe("0.0.0.0:9000", nil); err != nil {
+	if err := http.ListenAndServe("0.0.0.0:80", nil); err != nil {
 		log.Fatal(err)
 	}
 }
