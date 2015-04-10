@@ -33,14 +33,39 @@ body {
 }
 
 .animated {
+    -webkit-animation-fill-mode: both;
+    -webkit-animation-duration: 1000ms;
     animation-fill-mode: both;
     animation-duration: 1000ms;
+}
+
+@-webkit-keyframes fadeInDown {
+    0% {
+        opacity: 0;
+        -webkit-transform: translateY(-100%);
+        transform: translateY(-100%);
+    }
+
+    100% {
+        opacity: 1;
+    }
 }
 
 @keyframes fadeInDown {
     0% {
         opacity: 0;
+        -webkit-transform: translateY(-100%);
         transform: translateY(-100%);
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+@-webkit-keyframes fadeIn {
+    0% {
+        opacity: 0;
     }
 
     100% {
@@ -51,6 +76,18 @@ body {
 @keyframes fadeIn {
     0% {
         opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+
+@-webkit-keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(100%);
     }
 
     100% {
@@ -70,14 +107,17 @@ body {
 }
 
 .fadeIn {
+    -webkit-animation-name: fadeIn;
     animation-name: fadeIn;
 }
 
 .fadeInDown {
+    -webkit-animation-name: fadeInDown;
     animation-name: fadeInDown;
 }
 
 .fadeInUp {
+    -webkit-animation-name: fadeInUp;
     animation-name: fadeInUp;
 }
 
@@ -144,6 +184,20 @@ body {
     }
 }
 
+@-webkit-keyframes headerTextAppear {
+    0% {
+        width: 0;
+        left: 50%;
+        right: 50%;
+    }
+
+    100% {
+        width: 100%;
+        left: 0;
+        right: 0;
+    }
+}
+
 @keyframes headerTextAppear {
     0% {
         width: 0;
@@ -159,6 +213,9 @@ body {
 }
 
 .headerTextAppear {
+    -webkit-animation-name: headerTextAppear;
+    -webkit-animation-duration: 450ms;
+    -webkit-animation-delay: 550ms;
     animation-name: headerTextAppear;
     animation-duration: 450ms;
     animation-delay: 550ms;
@@ -185,6 +242,16 @@ body {
     right: 0;
 }
 
+@-webkit-keyframes chevronLeftSlide {
+    0% {
+        transform: translateX(50%);
+    }
+
+    100% {
+        transform: translateX(0);
+    }
+}
+
 @keyframes chevronLeftSlide {
     0% {
         transform: translateX(50%);
@@ -192,6 +259,16 @@ body {
 
     100% {
         transform: translateX(0);
+    }
+}
+
+@-webkit-keyframes chevronRightSlide {
+    0% {
+        transform: translateX(-50%) scaleX(-1);
+    }
+
+    100% {
+        transform: translateX(0) scaleX(-1);
     }
 }
 
@@ -206,17 +283,21 @@ body {
 }
 
 .chevronSlide() {
+    -webkit-animation-delay: 500ms;
+    -webkit-animation-duration: 500ms;
     animation-delay: 500ms;
     animation-duration: 500ms;
 }
 
 .chevronLeftSlide {
     .chevronSlide();
+    -webkit-animation-name: chevronLeftSlide;
     animation-name: chevronLeftSlide;
 }
 
 .chevronRightSlide {
     .chevronSlide();
+    -webkit-animation-name: chevronRightSlide;
     animation-name: chevronRightSlide;
 }
 
