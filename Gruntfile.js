@@ -7,11 +7,15 @@ module.exports = function(grunt) {
             }
         },
 
+        clean: {
+            dist: ['dist']
+        },
+        
         copy: {
             dist: {
                 expand: true,
                 cwd: 'src/',
-                src: ['*.xhtml', 'img/*'],
+                src: ['img/*'],
                 dest: 'dist/'
             }
         },
@@ -53,14 +57,29 @@ module.exports = function(grunt) {
                     'dist/script/script.js': ['src/script/script.js']
                 }
             }
+        },
+        
+        htmlmin: {
+            dist: {
+                options: {
+                    removeComments: true,
+                    collapseWhitespace: true,
+                    keepClosingSlash: true
+                },
+                files: {
+                    'dist/index.xhtml': 'src/index.xhtml'
+                }
+            }
         }
     });
 
     grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-less');
     grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-contrib-uglify');
-    grunt.registerTask('dist', ['copy:dist', 'less:dist', 'cssmin:dist', 'uglify:dist'])
+    grunt.loadNpmTasks('grunt-contrib-htmlmin');
+    grunt.registerTask('dist', ['clean:dist', 'copy:dist', 'less:dist', 'cssmin:dist', 'uglify:dist', 'htmlmin:dist'])
     grunt.registerTask('default', ['watch']);
 };
