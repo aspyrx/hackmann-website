@@ -1,23 +1,83 @@
 package main
 
 import (
+    "bytes"
+    "compress/gzip"
 	"database/sql"
 	_ "github.com/lib/pq"
+    "io"
 	"log"
 	"net/http"
+    "os"
+    "path/filepath"
 	"regexp"
-    "strings"
 )
 
-var Db *sql.DB
+type fileCache struct {
+	buf bytes.Buffer
+    gzipped bytes.Buffer
+}
+
+func (f *fileCache) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+    acceptsGzip := false
+    for _, v := range r.Header["Accept-Encoding"] {
+        if v == "gzip" {
+            acceptsGzip = true
+            break
+        }
+    }
+    
+    if acceptsGzip {
+        w.Header().Set("Content-Encoding", "gzip")
+        w.Write(f.gzipped.Bytes())
+    } else {
+        w.Write(f.buf.Bytes())
+    }
+}
+
+func NewCache(fileName string) *fileCache {
+	f, err := os.Open(fileName)
+	if err != nil {
+		log.Fatalf("couldn't open file: %v", err)
+	}
+
+	ret := &fileCache{}
+	_, err = io.Copy(io.MultiWriter(&ret.buf, gzip.NewWriter(&ret.gzipped)), f)
+    if err != nil {
+		log.Fatalf("couldn't read file: %v", err)
+	}
+
+	return ret
+}
+
+const staticFileDirectory = "dist"
+
+var db *sql.DB
+var staticFiles = map[string]*fileCache {}
 
 func main() {
 	var err error
-	Db, err = sql.Open("postgres", "connect_timeout=5 user=hackmann password='hackmann' dbname=hackmann sslmode=disable")
-	defer Db.Close()
+	db, err = sql.Open("postgres", "connect_timeout=5 user=hackmann password='hackmann' dbname=hackmann sslmode=disable")
+	defer db.Close()
 	if err != nil {
 		log.Fatal(err)
 	}
+    
+    staticFilePaths := []string {}
+    err = filepath.Walk(staticFileDirectory, func(path string, info os.FileInfo, err error) error {
+        if !info.IsDir() {
+            // deal with Windows path separator
+            staticFilePaths = append(staticFilePaths, path)
+        }
+        return err
+    })
+    if err != nil {
+        log.Fatal(err)
+    }
+    
+    for _, path := range staticFilePaths {
+        staticFiles[path] = NewCache(path)
+    }
 
 	http.HandleFunc("/", rootHandler)
 	http.HandleFunc("/register", registerHandler)
@@ -27,17 +87,36 @@ func main() {
 }
 
 func rootHandler(w http.ResponseWriter, r *http.Request) {
-    const rootDirectory = "./dist"
+    var path string
     switch (r.URL.Path) {
         case "/":
-            w.Header().Set("Content-Type", "application/xhtml+xml")
-            http.ServeFile(w, r, rootDirectory + "/index.xhtml")
+            path = filepath.FromSlash(staticFileDirectory + "/index.xhtml")
         default:
-            if strings.HasSuffix(r.URL.Path, ".svg") {
-                w.Header().Set("Content-Type", "image/svg+xml")
-            }
-            http.ServeFile(w, r, rootDirectory + r.URL.Path)
+            path = filepath.FromSlash(staticFileDirectory + r.URL.Path)
     }
+    
+    file, ok := staticFiles[path]
+    if !ok {
+        w.WriteHeader(http.StatusNotFound)
+        return
+    }
+    
+    var contentType string
+    switch (filepath.Ext(path)) {
+        case ".xhtml":
+            contentType = "application/xhtml+xml"
+        case ".css":
+            contentType = "text/css"
+        case ".js":
+            contentType = "application/javascript"
+        case ".svg":
+            contentType = "image/svg+xml"
+        default:
+            contentType = "text/plain"
+    }
+    w.Header().Set("Content-Type", contentType)
+    
+    file.ServeHTTP(w, r)
 }
 
 func registerHandler(w http.ResponseWriter, r *http.Request) {
@@ -49,14 +128,14 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var id int
-	err := Db.QueryRow(`SELECT id FROM registrations WHERE email = $1`, email).Scan(&id)
+	err := db.QueryRow(`SELECT id FROM registrations WHERE email = $1`, email).Scan(&id)
 	switch {
 	case err == sql.ErrNoRows:
-		err = Db.QueryRow(`INSERT INTO registrations (firstname, lastname, school, email) VALUES ($1, $2, $3, $4) RETURNING id`, firstname, lastname, school, email).Scan(&id)
+		err = db.QueryRow(`INSERT INTO registrations (firstname, lastname, school, email) VALUES ($1, $2, $3, $4) RETURNING id`, firstname, lastname, school, email).Scan(&id)
 	case err != nil:
 		break
 	default:
-		err = Db.QueryRow(`UPDATE registrations SET firstname = $1, lastname = $2, school = $3 WHERE id = $4 RETURNING id`, firstname, lastname, school, id).Scan(&id)
+		err = db.QueryRow(`UPDATE registrations SET firstname = $1, lastname = $2, school = $3 WHERE id = $4 RETURNING id`, firstname, lastname, school, id).Scan(&id)
 	}
 
 	if err != nil {
