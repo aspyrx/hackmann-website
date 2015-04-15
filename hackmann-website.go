@@ -11,6 +11,7 @@ import (
     "os"
     "path/filepath"
 	"regexp"
+    "strings"
 )
 
 type fileCache struct {
@@ -19,15 +20,7 @@ type fileCache struct {
 }
 
 func (f *fileCache) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-    acceptsGzip := false
-    for _, v := range r.Header["Accept-Encoding"] {
-        if v == "gzip" {
-            acceptsGzip = true
-            break
-        }
-    }
-    
-    if acceptsGzip {
+    if strings.Contains(r.Header.Get("Accept-Encoding"), "gzip") {
         w.Header().Set("Content-Encoding", "gzip")
         w.Write(f.gzipped.Bytes())
     } else {
@@ -37,12 +30,15 @@ func (f *fileCache) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func NewCache(fileName string) *fileCache {
 	f, err := os.Open(fileName)
+    defer f.Close()
 	if err != nil {
 		log.Fatalf("couldn't open file: %v", err)
 	}
 
 	ret := &fileCache{}
-	_, err = io.Copy(io.MultiWriter(&ret.buf, gzip.NewWriter(&ret.gzipped)), f)
+    gzipper := gzip.NewWriter(&ret.gzipped)
+    defer gzipper.Close()
+	_, err = io.Copy(io.MultiWriter(&ret.buf, gzipper), f)
     if err != nil {
 		log.Fatalf("couldn't read file: %v", err)
 	}
