@@ -11,7 +11,6 @@ document.getElementById('registerForm').onsubmit = function(e) {
 
     var form = e.target;
     if (!form.checkValidity()) {
-        console.log('Form is invalid');
         return;
     }
 
@@ -22,7 +21,6 @@ document.getElementById('registerForm').onsubmit = function(e) {
             formData[input.name] = input.value;
         }
     }
-    console.log(formData);
 
     jQuery.ajax(form.action, {
         method: 'POST',
@@ -32,8 +30,7 @@ document.getElementById('registerForm').onsubmit = function(e) {
             document.getElementById('register-form-status').classList.remove('alert-danger');
             document.getElementById('register-form-status').classList.add("alert-success");
             document.getElementById('register-form-status-title').innerHTML = 'Success!';
-            document.getElementById('register-form-status-message').innerHTML = 'Thanks for signing up for HackMANN 2015!';
-            console.log(data);
+            document.getElementById('register-form-status-message').innerHTML = 'Thanks for signing up for HackMANN 2015! Look out soon for an email from us for more details.';
         },
         error: function(jqXHR, textStatus, errorThrown) {
             document.getElementById('register-form-status').classList.remove('hidden');
@@ -41,7 +38,6 @@ document.getElementById('registerForm').onsubmit = function(e) {
             document.getElementById('register-form-status').classList.add('alert-danger');
             document.getElementById('register-form-status-title').innerHTML = 'Uh oh...';
             document.getElementById('register-form-status-message').innerHTML = 'Something went wrong! Please try again or contact us via email.';
-            console.log(jqXHR, textStatus, errorThrown);
         }
     });
 }
