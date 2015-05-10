@@ -6,7 +6,7 @@ document.getElementById('navbar-register-button').onclick = function() {
     window.location.href = '#scroll-register';
 }
 
-document.getElementById('registerForm').onsubmit = function(e) {
+formSubmit = function(e) {
     e.preventDefault();
 
     var form = e.target;
@@ -22,25 +22,37 @@ document.getElementById('registerForm').onsubmit = function(e) {
         }
     }
 
+    var formName = e.target.id.substring(0, e.target.id.indexOf('Form'));
+    statusClassList = document.getElementById(formName + '-form-status').classList;
+    statusTitle = document.getElementById(formName + '-form-status-title');
+    statusMessage = document.getElementById(formName + '-form-status-message');
+    statusMessageSuccessText = 'Thanks for signing up for HackMANN 2015! Look out soon for an email from us for more details.';
+    if (formName === 'sponsor') {
+        statusMessageSuccessText = 'Thanks for your interest in sponsoring HackMANN 2015! Feel free to email us; otherwise, we will get in touch with you as soon as possible.';
+    }
     jQuery.ajax(form.action, {
         method: 'POST',
         data: formData,
         success: function(data, textStatus, jqXHR) {
-            document.getElementById('register-form-status').classList.remove('hidden');
-            document.getElementById('register-form-status').classList.remove('alert-danger');
-            document.getElementById('register-form-status').classList.add("alert-success");
-            document.getElementById('register-form-status-title').innerHTML = 'Success!';
-            document.getElementById('register-form-status-message').innerHTML = 'Thanks for signing up for HackMANN 2015! Look out soon for an email from us for more details.';
+            statusClassList.remove('hidden');
+            statusClassList.remove('alert-danger');
+            statusClassList.add("alert-success");
+            statusTitle.innerHTML = 'Success!';
+            statusMessage.innerHTML = statusMessageSuccessText;
         },
         error: function(jqXHR, textStatus, errorThrown) {
-            document.getElementById('register-form-status').classList.remove('hidden');
-            document.getElementById('register-form-status').classList.remove('alert-success');
-            document.getElementById('register-form-status').classList.add('alert-danger');
-            document.getElementById('register-form-status-title').innerHTML = 'Uh oh...';
-            document.getElementById('register-form-status-message').innerHTML = 'Something went wrong! Please try again or contact us via email.';
+            statusClassList.remove('hidden');
+            statusClassList.remove('alert-success');
+            statusClassList.add('alert-danger');
+            statusTitle.innerHTML = 'Uh oh...';
+            statusMessage.innerHTML = 'Something went wrong! Please try again or contact us via email.';
         }
     });
 }
+
+document.getElementById('registerForm').onsubmit = formSubmit;
+document.getElementById('mentorForm').onsubmit = formSubmit;
+document.getElementById('sponsorForm').onsubmit = formSubmit;
 
 function animateBits() {
     const BITS_ID = 'bits';

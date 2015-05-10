@@ -1,45 +1,45 @@
 package main
 
 import (
-    "bytes"
-    "compress/gzip"
+	"bytes"
+	"compress/gzip"
 	"database/sql"
 	_ "github.com/lib/pq"
-    "io"
+	"io"
 	"log"
 	"net/http"
-    "os"
-    "path/filepath"
+	"os"
+	"path/filepath"
 	"regexp"
-    "strings"
+	"strings"
 )
 
 type fileCache struct {
-	buf bytes.Buffer
-    gzipped bytes.Buffer
+	buf     bytes.Buffer
+	gzipped bytes.Buffer
 }
 
 func (f *fileCache) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-    if strings.Contains(r.Header.Get("Accept-Encoding"), "gzip") {
-        w.Header().Set("Content-Encoding", "gzip")
-        w.Write(f.gzipped.Bytes())
-    } else {
-        w.Write(f.buf.Bytes())
-    }
+	if strings.Contains(r.Header.Get("Accept-Encoding"), "gzip") {
+		w.Header().Set("Content-Encoding", "gzip")
+		w.Write(f.gzipped.Bytes())
+	} else {
+		w.Write(f.buf.Bytes())
+	}
 }
 
 func NewCache(fileName string) *fileCache {
 	f, err := os.Open(fileName)
-    defer f.Close()
+	defer f.Close()
 	if err != nil {
 		log.Fatalf("couldn't open file: %v", err)
 	}
 
 	ret := &fileCache{}
-    gzipper := gzip.NewWriter(&ret.gzipped)
-    defer gzipper.Close()
+	gzipper := gzip.NewWriter(&ret.gzipped)
+	defer gzipper.Close()
 	_, err = io.Copy(io.MultiWriter(&ret.buf, gzipper), f)
-    if err != nil {
+	if err != nil {
 		log.Fatalf("couldn't read file: %v", err)
 	}
 
@@ -49,7 +49,7 @@ func NewCache(fileName string) *fileCache {
 const staticFileDirectory = "dist"
 
 var db *sql.DB
-var staticFiles = map[string]*fileCache {}
+var staticFiles = map[string]*fileCache{}
 
 func main() {
 	var err error
@@ -58,61 +58,63 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-    
-    staticFilePaths := []string {}
-    err = filepath.Walk(staticFileDirectory, func(path string, info os.FileInfo, err error) error {
-        if !info.IsDir() {
-            // deal with Windows path separator
-            staticFilePaths = append(staticFilePaths, path)
-        }
-        return err
-    })
-    if err != nil {
-        log.Fatal(err)
-    }
-    
-    for _, path := range staticFilePaths {
-        staticFiles[path] = NewCache(path)
-    }
+
+	staticFilePaths := []string{}
+	err = filepath.Walk(staticFileDirectory, func(path string, info os.FileInfo, err error) error {
+		if !info.IsDir() {
+			// deal with Windows path separator
+			staticFilePaths = append(staticFilePaths, path)
+		}
+		return err
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for _, path := range staticFilePaths {
+		staticFiles[path] = NewCache(path)
+	}
 
 	http.HandleFunc("/", rootHandler)
 	http.HandleFunc("/register", registerHandler)
+	http.HandleFunc("/mentor", mentorHandler)
+	http.HandleFunc("/sponsor", sponsorHandler)
 	if err := http.ListenAndServe("0.0.0.0:80", nil); err != nil {
 		log.Fatal(err)
 	}
 }
 
 func rootHandler(w http.ResponseWriter, r *http.Request) {
-    var path string
-    switch (r.URL.Path) {
-        case "/":
-            path = filepath.FromSlash(staticFileDirectory + "/index.xhtml")
-        default:
-            path = filepath.FromSlash(staticFileDirectory + r.URL.Path)
-    }
-    
-    file, ok := staticFiles[path]
-    if !ok {
-        w.WriteHeader(http.StatusNotFound)
-        return
-    }
-    
-    var contentType string
-    switch (filepath.Ext(path)) {
-        case ".xhtml":
-            contentType = "application/xhtml+xml"
-        case ".css":
-            contentType = "text/css"
-        case ".js":
-            contentType = "application/javascript"
-        case ".svg":
-            contentType = "image/svg+xml"
-        default:
-            contentType = "text/plain"
-    }
-    w.Header().Set("Content-Type", contentType)
-    
-    file.ServeHTTP(w, r)
+	var path string
+	switch r.URL.Path {
+	case "/":
+		path = filepath.FromSlash(staticFileDirectory + "/index.xhtml")
+	default:
+		path = filepath.FromSlash(staticFileDirectory + r.URL.Path)
+	}
+
+	file, ok := staticFiles[path]
+	if !ok {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	var contentType string
+	switch filepath.Ext(path) {
+	case ".xhtml":
+		contentType = "application/xhtml+xml"
+	case ".css":
+		contentType = "text/css"
+	case ".js":
+		contentType = "application/javascript"
+	case ".svg":
+		contentType = "image/svg+xml"
+	default:
+		contentType = "text/plain"
+	}
+	w.Header().Set("Content-Type", contentType)
+
+	file.ServeHTTP(w, r)
 }
 
 func registerHandler(w http.ResponseWriter, r *http.Request) {
@@ -132,6 +134,60 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 		break
 	default:
 		err = db.QueryRow(`UPDATE registrations SET firstname = $1, lastname = $2, school = $3 WHERE id = $4 RETURNING id`, firstname, lastname, school, id).Scan(&id)
+	}
+
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Println(err)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+}
+
+func mentorHandler(w http.ResponseWriter, r *http.Request) {
+	r.ParseForm()
+	var firstname, lastname, organization, email = r.PostForm.Get("firstname"), r.PostForm.Get("lastname"), r.PostForm.Get("organization"), r.PostForm.Get("email")
+	if !(len(firstname) > 0 || len(lastname) > 0 || len(organization) > 0 || isValidEmail(email)) {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	var id int
+	err := db.QueryRow(`SELECT id FROM mentors WHERE email = $1`, email).Scan(&id)
+	switch {
+	case err == sql.ErrNoRows:
+		err = db.QueryRow(`INSERT INTO mentors (firstname, lastname, organization, email) VALUES ($1, $2, $3, $4) RETURNING id`, firstname, lastname, organization, email).Scan(&id)
+	case err != nil:
+		break
+	default:
+		err = db.QueryRow(`UPDATE mentors SET firstname = $1, lastname = $2, organization = $3 WHERE id = $4 RETURNING id`, firstname, lastname, organization, id).Scan(&id)
+	}
+
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Println(err)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+}
+
+func sponsorHandler(w http.ResponseWriter, r *http.Request) {
+	r.ParseForm()
+	var firstname, lastname, organization, email = r.PostForm.Get("firstname"), r.PostForm.Get("lastname"), r.PostForm.Get("organization"), r.PostForm.Get("email")
+	if !(len(firstname) > 0 || len(lastname) > 0 || len(organization) > 0 || isValidEmail(email)) {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	var id int
+	err := db.QueryRow(`SELECT id FROM sponsors WHERE email = $1`, email).Scan(&id)
+	switch {
+	case err == sql.ErrNoRows:
+		err = db.QueryRow(`INSERT INTO sponsors (firstname, lastname, organization, email) VALUES ($1, $2, $3, $4) RETURNING id`, firstname, lastname, organization, email).Scan(&id)
+	case err != nil:
+		break
+	default:
+		err = db.QueryRow(`UPDATE sponsors SET firstname = $1, lastname = $2, organization = $3 WHERE id = $4 RETURNING id`, firstname, lastname, organization, id).Scan(&id)
 	}
 
 	if err != nil {
